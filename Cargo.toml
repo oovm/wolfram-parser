@@ -1,0 +1,17 @@
+[package]
+name = "wolfram-pest"
+version = "0.1.0"
+authors = ["Aster <192607617@qq.com>"]
+description = "Notedown Text parser"
+repository = "https://github.com/GalAster/wolfram-pest"
+readme = "Readme.md"
+license = "MPL-2.0"
+edition = "2018"
+
+
+[dependencies]
+pest = "2.1"
+
+[dev-dependencies]
+pest_generator = "2.1"
+quote = "1.0"
