@@ -2,70 +2,12 @@ program = _{SOI~statement* ~ EOI}
 
 statement = _{
     emptyStatement
-  | assignStatement ~ eos?
-  | defineStatement ~ eos?
-  | annotation ~ eos?
   | expression
 }
 /*====================================================================================================================*/
 emptyStatement = {eos}
 eos = {Semicolon}
 comma_or_semi = _{Comma|Semicolon}
-/*====================================================================================================================*/
-re_control = {
-    Return ~ expr
-  | Break
-  | Pass
-}
-
-//!#C678DD: Return|Yield|Break|Pass
-Return = @{"return"}
-Yield = @{"yield"}
-Break = @{"break"}
-Pass = @{"pass"}
-/*====================================================================================================================*/
-///#C678DD
-Type = @{"type"}
-/*====================================================================================================================*/
-classStatement = {"class" ~ assign_pair ~ short_block?}
-traitStatement = {"trait" ~ assign_pair ~ short_block?}
-
-short_block = {"{" ~ short_statement* ~ "}"}
-short_statement = {
-    emptyStatement
-  | "def"? ~ define_terms ~ eos?
-  | "let"? ~ assign_terms ~ eos?
-  | short_annotation ~ eos?
-}
-short_annotation = {annotation_call+~short_statement}
-/*====================================================================================================================*/
-extendStatement = {
-    "extends" ~ Symbol ~ with_trait? ~ short_block
-}
-with_trait = {"with" ~ Symbol}
-//!#C678DD: Extend|With
-/*====================================================================================================================*/
-assignStatement = {"let" ~ assign_terms}
-assign_terms = _{
-    "(" ~ assign_name ~ ")" ~ type_hint? ~ block_or_stmt?
-  | assign_name ~ type_hint? ~ block_or_stmt?
-}
-assign_name = _{assign_pair ~ (Comma ~ assign_pair)* ~ Comma?}
-assign_pair = {Symbol}
-/*====================================================================================================================*/
-defineStatement = {"def" ~ define_terms}
-define_terms = _{
-    assign_pair ~ define_parameter ~ type_hint? ~ block_or_stmt?
-}
-define_parameter = {
-    "(" ~ define_pair ~ (Comma ~ define_pair)* ~ Comma? ~ ")"
-  | "(" ~ ")"
-}
-define_pair = {SYMBOL ~ type_hint? ~ (Set ~ expr)?}
-/*====================================================================================================================*/
-//!Orange:annotation_call
-annotation = {annotation_call+~statement}
-annotation_call = @{At~(list|apply|Symbol)}
 /*====================================================================================================================*/
 apply = !{
      "(" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~")"
@@ -85,16 +27,6 @@ node       =  {"(" ~ expr ~ ")"|apply_call|derivative|space_call|data}
 apply_call = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
 derivative = ${Symbol ~ Derivative ~ (!NEWLINE ~ WHITESPACE)* ~ apply}
 space_call = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
-/*====================================================================================================================*/
-//!#E06C75: type_hint|generic_type|parametric_types_pair
-type_expr = _{term~ (TypeInfix ~term)*}
-//type_term = {Prefix* ~ type_node ~ Suffix*}
-//type_node = {"(" ~ type_expr ~ ")"|data}
-type_hint = {Colon ~ type_expr}
-
-//TypePrefix = @{Plus|Minus}
-//TypeSuffix = @{Question}
-TypeInfix = @{Or}
 /*====================================================================================================================*/
 data = ${dict|list|Special|REPL|Slot|Number|String|Symbol}
 dict = !{"{" ~ "}" | "{" ~ key_value ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
@@ -147,8 +79,7 @@ Internal = @{"⁅" ~ Symbol ~ "|" ~ Byte ~ "⁆"}
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = _{NEWLINE|WHITE_SPACE}
-COMMENT = _{MultiLineComment | "%" ~ (!NEWLINE ~ ANY)*}
-MultiLineComment = ${ "%%%" ~ (MultiLineComment | !"%%%" ~ ANY)* ~ "%%%"}
+COMMENT = _{"(*" ~ (COMMENT | !"*)" ~ ANY)* ~ "*)"}
 /*====================================================================================================================*/
 //!#56B6C2: Prefix|Infix|Postfix
 Prefix = @{
