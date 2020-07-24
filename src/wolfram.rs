@@ -31,7 +31,11 @@ pub enum Rule {
     Number,
     Decimal,
     Integer,
-    Byte,
+    BaseForm,
+    ExDigits,
+    Accuracy,
+    Precision,
+    Base,
     String,
     NormalText,
     StringBlock,
@@ -42,9 +46,7 @@ pub enum Rule {
     Pattern,
     Special,
     Slot,
-    REPL,
     Positive,
-    Internal,
     WHITESPACE,
     COMMENT,
     Prefix,
@@ -213,7 +215,7 @@ impl ::pest::Parser<Rule> for WolframParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn data(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::data, |state| state.restore_on_err(|state| self::dict(state)).or_else(|state| state.restore_on_err(|state| self::list(state))).or_else(|state| self::Special(state)).or_else(|state| self::REPL(state)).or_else(|state| self::Slot(state)).or_else(|state| self::Number(state)).or_else(|state| state.restore_on_err(|state| self::String(state))).or_else(|state| self::Symbol(state))))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::data, |state| state.restore_on_err(|state| self::dict(state)).or_else(|state| state.restore_on_err(|state| self::list(state))).or_else(|state| self::Special(state)).or_else(|state| self::Slot(state)).or_else(|state| self::Number(state)).or_else(|state| state.restore_on_err(|state| self::String(state))).or_else(|state| self::Symbol(state))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -258,22 +260,42 @@ impl ::pest::Parser<Rule> for WolframParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Number(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    self::Byte(state).or_else(|state| self::Decimal(state)).or_else(|state| self::Integer(state))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Number, |state| state.sequence(|state| self::BaseForm(state).or_else(|state| self::Decimal(state)).or_else(|state| self::Integer(state)).and_then(|state| state.optional(|state| self::ExDigits(state))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Decimal(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Decimal, |state| state.sequence(|state| self::Integer(state).and_then(|state| self::Dot(state)).and_then(|state| self::Integer(state)))))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Decimal, |state| state.sequence(|state| self::Dot(state).and_then(|state| self::Integer(state))).or_else(|state| state.sequence(|state| self::Integer(state).and_then(|state| self::Dot(state)).and_then(|state| state.optional(|state| self::Integer(state)))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Integer(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Integer, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("0").or_else(|state| self::Positive(state))))
+                    state.rule(Rule::Integer, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| self::ASCII_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
-                pub fn Byte(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Byte, |state| state.sequence(|state| state.match_insensitive("0b").and_then(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_BIN_DIGIT(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_BIN_DIGIT(state)))))).or_else(|state| state.sequence(|state| state.match_insensitive("0o").and_then(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_OCT_DIGIT(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_OCT_DIGIT(state))))))).or_else(|state| state.sequence(|state| state.match_insensitive("0x").and_then(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_HEX_DIGIT(state)))).and_then(|state| state.repeat(|state| state.sequence(|state| state.optional(|state| self::Underline(state)).and_then(|state| self::ASCII_HEX_DIGIT(state)))))))))
+                pub fn BaseForm(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::BaseForm, |state| state.sequence(|state| self::Integer(state).and_then(|state| self::Base(state)).and_then(|state| self::ASCII_ALPHA(state).or_else(|state| self::ASCII_DIGIT(state))).and_then(|state| state.repeat(|state| self::ASCII_ALPHA(state).or_else(|state| self::ASCII_DIGIT(state)))))))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn ExDigits(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::ExDigits, |state| state.sequence(|state| self::Accuracy(state).or_else(|state| self::Precision(state)).and_then(|state| self::Decimal(state).or_else(|state| self::Integer(state))))))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Accuracy(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Accuracy, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("``")))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Precision(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Precision, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("`")))
+                }
+                #[inline]
+                #[allow(non_snake_case, unused_variables)]
+                pub fn Base(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.rule(Rule::Base, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.match_string("^^")))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -303,12 +325,12 @@ impl ::pest::Parser<Rule> for WolframParser {
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn Symbol(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Symbol, |state| state.sequence(|state| self::SYMBOL(state).and_then(|state| state.repeat(|state| state.sequence(|state| self::Proportion(state).and_then(|state| self::SYMBOL(state))))))))
+                    state.atomic(::pest::Atomicity::CompoundAtomic, |state| state.rule(Rule::Symbol, |state| state.sequence(|state| self::SYMBOL(state).and_then(|state| state.repeat(|state| state.sequence(|state| state.match_string("`").and_then(|state| self::SYMBOL(state))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
                 pub fn SYMBOL(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::SYMBOL, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| self::XID_START(state).and_then(|state| state.repeat(|state| state.sequence(|state| state.repeat(|state| self::Underline(state)).and_then(|state| self::XID_START(state).or_else(|state| self::ASCII_DIGIT(state)))))))))
+                    state.rule(Rule::SYMBOL, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| self::XID_START(state).and_then(|state| state.repeat(|state| self::XID_START(state).or_else(|state| self::ASCII_DIGIT(state))))).or_else(|state| state.sequence(|state| state.match_string("$").and_then(|state| state.repeat(|state| self::XID_START(state).or_else(|state| self::ASCII_DIGIT(state))))))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -327,18 +349,8 @@ impl ::pest::Parser<Rule> for WolframParser {
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
-                pub fn REPL(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::REPL, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("¶").and_then(|state| self::Positive(state))).or_else(|state| state.sequence(|state| state.match_string("¶").and_then(|state| state.repeat(|state| state.match_string("¶"))))).or_else(|state| state.sequence(|state| state.match_string("⁋").and_then(|state| self::Positive(state).or_else(|state| state.repeat(|state| state.match_string("⁋"))))))))
-                }
-                #[inline]
-                #[allow(non_snake_case, unused_variables)]
                 pub fn Positive(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
                     state.rule(Rule::Positive, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| self::ASCII_NONZERO_DIGIT(state).and_then(|state| state.repeat(|state| self::ASCII_DIGIT(state))))))
-                }
-                #[inline]
-                #[allow(non_snake_case, unused_variables)]
-                pub fn Internal(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.rule(Rule::Internal, |state| state.atomic(::pest::Atomicity::Atomic, |state| state.sequence(|state| state.match_string("⁅").and_then(|state| self::Symbol(state)).and_then(|state| state.match_string("|")).and_then(|state| self::Byte(state)).and_then(|state| state.match_string("⁆")))))
                 }
                 #[inline]
                 #[allow(non_snake_case, unused_variables)]
@@ -727,18 +739,8 @@ impl ::pest::Parser<Rule> for WolframParser {
                 }
                 #[inline]
                 #[allow(dead_code, non_snake_case, unused_variables)]
-                pub fn ASCII_BIN_DIGIT(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.match_range('0'..'1')
-                }
-                #[inline]
-                #[allow(dead_code, non_snake_case, unused_variables)]
-                pub fn ASCII_OCT_DIGIT(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.match_range('0'..'7')
-                }
-                #[inline]
-                #[allow(dead_code, non_snake_case, unused_variables)]
-                pub fn ASCII_HEX_DIGIT(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                    state.match_range('0'..'9').or_else(|state| state.match_range('a'..'f')).or_else(|state| state.match_range('A'..'F'))
+                pub fn ASCII_ALPHA(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
+                    state.match_range('a'..'z').or_else(|state| state.match_range('A'..'Z'))
                 }
                 #[inline]
                 #[allow(dead_code, non_snake_case, unused_variables)]
@@ -787,7 +789,11 @@ impl ::pest::Parser<Rule> for WolframParser {
             Rule::Number => rules::Number(state),
             Rule::Decimal => rules::Decimal(state),
             Rule::Integer => rules::Integer(state),
-            Rule::Byte => rules::Byte(state),
+            Rule::BaseForm => rules::BaseForm(state),
+            Rule::ExDigits => rules::ExDigits(state),
+            Rule::Accuracy => rules::Accuracy(state),
+            Rule::Precision => rules::Precision(state),
+            Rule::Base => rules::Base(state),
             Rule::String => rules::String(state),
             Rule::NormalText => rules::NormalText(state),
             Rule::StringBlock => rules::StringBlock(state),
@@ -798,9 +804,7 @@ impl ::pest::Parser<Rule> for WolframParser {
             Rule::Pattern => rules::Pattern(state),
             Rule::Special => rules::Special(state),
             Rule::Slot => rules::Slot(state),
-            Rule::REPL => rules::REPL(state),
             Rule::Positive => rules::Positive(state),
-            Rule::Internal => rules::Internal(state),
             Rule::WHITESPACE => rules::WHITESPACE(state),
             Rule::COMMENT => rules::COMMENT(state),
             Rule::Prefix => rules::Prefix(state),

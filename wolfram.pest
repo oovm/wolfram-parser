@@ -28,7 +28,7 @@ apply_call = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
 derivative = ${Symbol ~ Derivative ~ (!NEWLINE ~ WHITESPACE)* ~ apply}
 space_call = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
 /*====================================================================================================================*/
-data = ${dict|list|Special|REPL|Slot|Number|String|Symbol}
+data = ${dict|list|Special|Slot|Number|String|Symbol}
 dict = !{"{" ~ "}" | "{" ~ key_value ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
 list = !{"[" ~ "]" | "[" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ "]"}
 slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
@@ -42,15 +42,15 @@ Start = {expr}
 End = {expr}
 Step = {expr}
 /*====================================================================================================================*/
-//!#D19A66: Integer|Decimal|Byte
-Number  = _{Byte|Decimal|Integer}
-Decimal = ${Integer ~ Dot ~ Integer}
-Integer = @{"0"|Positive}
-Byte    = ${
-    ^"0b" ~ (Underline? ~ ASCII_BIN_DIGIT)+
-  | ^"0o" ~ (Underline? ~ ASCII_OCT_DIGIT)+
-  | ^"0x" ~ (Underline? ~ ASCII_HEX_DIGIT)+
-}
+///#D19A66
+Number    = ${(BaseForm|Decimal|Integer) ~ ExDigits?}
+Decimal   = ${Dot ~ Integer|Integer ~ Dot ~ Integer?}
+Integer   = @{ASCII_DIGIT+}
+BaseForm  = ${Integer ~ Base ~ (ASCII_ALPHA|ASCII_DIGIT)+}
+ExDigits  = ${(Accuracy|Precision) ~ (Decimal|Integer)}
+Accuracy  = @{"``"}
+Precision = @{"`"}
+Base      = @{"^^"}
 /*====================================================================================================================*/
 ///#98C379
 String       = ${SYMBOL? ~ (StringBlock|NormalText)}
@@ -66,16 +66,17 @@ ApostropheText   = @{(!(Apostrophe{3} ~ PEEK) ~ ANY)+}
 QuotationText   = @{(!(Quotation{3} ~ PEEK) ~ ANY)+}
 /*====================================================================================================================*/
 ///#61AFEF
-Symbol  = ${SYMBOL ~ (Proportion ~ SYMBOL)*}
-SYMBOL  = @{XID_START ~  (Underline* ~ (XID_START|ASCII_DIGIT))*}
+Symbol  = ${SYMBOL ~ ("`" ~ SYMBOL)*}
+SYMBOL  = @{
+    XID_START ~  (XID_START|ASCII_DIGIT)* |
+    "$" ~ (XID_START|ASCII_DIGIT)*
+}
 Pattern = @{XID_START* ~ Underline+}
 /*====================================================================================================================*/
 ///#D19A66
 Special  = @{"true"|"false"}
 Slot     = ${"##" ~ Positive?|"#" ~ (SYMBOL|Integer)?}
-REPL     = @{"¶" ~ Positive|"¶"+| "⁋" ~ Positive|"⁋"+}
 Positive = @{ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
-Internal = @{"⁅" ~ Symbol ~ "|" ~ Byte ~ "⁆"}
 /*====================================================================================================================*/
 // NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
 WHITESPACE = _{NEWLINE|WHITE_SPACE}
