@@ -10,7 +10,7 @@ eos = {Semicolon}
 comma_or_semi = _{Comma|Semicolon}
 /*====================================================================================================================*/
 apply = !{
-     "(" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~")"
+     "[" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~"]"
 }
 apply_kv = {SYMBOL~ Colon ~ expr|expr}
 
@@ -28,15 +28,15 @@ apply_call = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
 derivative = ${Symbol ~ Derivative ~ (!NEWLINE ~ WHITESPACE)* ~ apply}
 space_call = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
 /*====================================================================================================================*/
-data = ${dict|list|Special|Slot|Number|String|Symbol}
-dict = !{"{" ~ "}" | "{" ~ key_value ~ (Comma ~ key_value)* ~ Comma? ~ "}"}
-list = !{"[" ~ "]" | "[" ~ expr ~ (Comma ~ expr)* ~ Comma? ~ "]"}
-slice = !{"[" ~ index ~ (Comma ~ index)* ~ Comma? ~ "]"}
-key_value =!{(Integer | SYMBOL | String) ~ (RuleDelayed|Colon) ~ expr}
+data = ${dict|list|Slot|Number|String|Symbol}
+dict = !{"<|" ~ "|>" | "<|" ~ key_value ~ (Comma ~ key_value)* ~ "|>"}
+list = !{"{" ~ "}" | "{" ~ expr ~ (Comma ~ expr)* ~ "}"}
+slice = !{"[" ~ "[" ~ index ~ (Comma ~ index)* ~ "]" ~ "]"}
+key_value =!{data ~ (RuleDelayed|Rule) ~ expr}
 index = {
-    Start? ~ Colon ~ End? ~ Colon ~ Step?
-  | Start? ~ Colon ~ End?
-  | expr
+    Start? ~ ";;" ~ End? ~ ";;" ~ Step? |
+    Start? ~ ";;" ~ End? |
+    expr
 }
 Start = {expr}
 End = {expr}
@@ -53,17 +53,7 @@ Precision = @{"`"}
 Base      = @{"^^"}
 /*====================================================================================================================*/
 ///#98C379
-String       = ${SYMBOL? ~ (StringBlock|NormalText)}
-NormalText = @{
-    Apostrophe ~ (!Apostrophe ~ ANY)* ~ Apostrophe
-  | Quotation ~ (!Quotation ~ ANY)* ~ Quotation
-}
-StringBlock  = _{
-    Apostrophe{3} ~ PUSH(Apostrophe*) ~ ApostropheText ~ POP ~ Apostrophe{3}
-  | Quotation{3} ~ PUSH(Quotation*) ~ QuotationText ~ POP ~ Quotation{3}
-}
-ApostropheText   = @{(!(Apostrophe{3} ~ PEEK) ~ ANY)+}
-QuotationText   = @{(!(Quotation{3} ~ PEEK) ~ ANY)+}
+String     = ${Quote ~ (!Quote ~ ANY)* ~ Quote}
 /*====================================================================================================================*/
 ///#61AFEF
 Symbol  = ${SYMBOL ~ ("`" ~ SYMBOL)*}
@@ -74,7 +64,6 @@ SYMBOL  = @{
 Pattern = @{XID_START* ~ Underline+}
 /*====================================================================================================================*/
 ///#D19A66
-Special  = @{"true"|"false"}
 Slot     = ${"##" ~ Positive?|"#" ~ (SYMBOL|Integer)?}
 Positive = @{ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
 /*====================================================================================================================*/
@@ -132,6 +121,7 @@ GraterEqual =@{">="}
 Less =@{"<"}
 Grater =@{">"}
 Pipeline = @{"|>"}
+Rule = @{"->"}
 RuleDelayed = @{":>"}
 
 Equivalent =@{"==="}
@@ -175,10 +165,9 @@ Elvis =@{":?"}
 Map =@ {"/@"}
 
 
-Quote =@{"`"}
+
 Acute =@{"´"} // U+00B4
-Apostrophe = _{"'"}
-Quotation = _{"\""}
+Quote = _{"\""}
 
 
 LogicOr =@{"||"|"∧"} //U+2227
