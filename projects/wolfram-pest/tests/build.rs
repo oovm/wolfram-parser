@@ -1,5 +1,6 @@
 use pest_generator::derive_parser;
 use std::{fs::File, io::prelude::*, path::Path};
+use quote::quote;
 
 pub fn gen_parser() {
     let pest = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "./wolfram.pest"));

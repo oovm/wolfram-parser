@@ -1,0 +1,21 @@
+[package]
+name = "wolfram-parser"
+version = "0.0.0"
+authors = ["Aster <192607617@qq.com>"]
+description = "Rust on Rails!"
+repository = "https://github.com/oovm/rust-on-rails"
+documentation = "https://docs.rs/ror"
+readme = "readme.md"
+license = "MPL-2.0"
+edition = "2021"
+exclude = ["package.json", "tests/**"]
+
+[dependencies]
+
+[dev-dependencies]
+
+[features]
+default = []
+
+[package.metadata.docs.rs]
+all-features = true
