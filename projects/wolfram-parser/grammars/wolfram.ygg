@@ -1,0 +1,49 @@
+grammar Wolfram {
+
+}
+
+class Root {
+    Expression
+}
+
+class Expression {
+    | FunctionCall
+    | Symbol
+    | Number
+    | String
+}
+
+class FunctionCall {
+    Identifier '[' Arguments? ']'
+}
+
+class Arguments {
+    Expression (',' Expression)*
+}
+
+class Symbol {
+    IDENTIFIER
+}
+
+class Number {
+    | Integer
+    | Real
+}
+
+class Integer {
+    DIGIT+
+}
+
+class Real {
+    DIGIT+ '.' DIGIT+
+}
+
+class String {
+    '"' TEXT* '"'
+}
+
+token {
+    IDENTIFIER: /[_A-Za-z][_A-Za-z0-9]*/
+    DIGIT: /[0-9]+/
+    TEXT: /[^"]*/
+}

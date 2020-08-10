@@ -1,5 +1,5 @@
 [package]
-name = "wolfram-parser"
+name = "wolfram-ast"
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "Rust on Rails!"
@@ -11,6 +11,8 @@ edition = "2021"
 exclude = ["package.json", "tests/**"]
 
 [dependencies]
+pratt = "0.4.0"
+yggdrasil-rt = "0.0.*"
 
 [dev-dependencies]
 
