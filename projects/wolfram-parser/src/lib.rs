@@ -8,4 +8,4 @@ pub mod ast;
 
 mod parser;
 
-
+mod jupyter;

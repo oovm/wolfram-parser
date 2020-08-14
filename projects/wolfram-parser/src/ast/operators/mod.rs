@@ -2,6 +2,8 @@ use pratt::Precedence;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum WolframOperator {
+    /// [Not, !](https://reference.wolfram.com/language/ref/Not.html)
+    Not,
     /// [Plus, +](https://reference.wolfram.com/language/ref/Plus.html)
     Plus,
     /// [Minus, -](https://reference.wolfram.com/language/ref/Minus.html)
@@ -34,7 +36,7 @@ impl WolframOperator {
             Self::Prefix => { 100 }
             Self::Postfix => { 100 }
             Self::Subtract => { 100 }
-            Self::Infix(..) => { 100 }
+            _ => unimplemented!()
         })
     }
 }

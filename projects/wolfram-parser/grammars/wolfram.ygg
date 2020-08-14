@@ -3,47 +3,92 @@ grammar Wolfram {
 }
 
 class Root {
-    Expression
+    Statements* EOI
+}
+class Eos {
+    [;]
 }
 
+union Statements {
+    | Expression
+}
+// === expressions === --------------------------------------------------------------------------------------------------
 class Expression {
+    Term* Eos?
+}
+
+union Term {
+    | Prefix
+    | Infix
+    | InfixExpr
+    | GroupExpr
+    | Atomic
+    | Suffix
     | FunctionCall
-    | Symbol
-    | Number
-    | String
+    | PartCall
+}
+text class Prefix {
+    /
+       !
+    /
+}
+
+text class Infix {
+    /
+       ([^+*\/]-)=?
+    | [\/]{2}
+    /
+}
+
+class InfixExpr {
+    '~' Expression '~'
+}
+
+class GroupExpr {
+    '(' Expression ')'
+}
+text class Suffix {
+    /
+       '
+    /
 }
 
 class FunctionCall {
-    Identifier '[' Arguments? ']'
+    '[' Expression (',' Expression)* ']'
 }
 
-class Arguments {
-    Expression (',' Expression)*
+class PartCall {
+    '[[' Expression (',' Expression)* ']]'
 }
-
-class Symbol {
-    IDENTIFIER
-}
-
-class Number {
+// === containers === --------------------------------------------------------------------------------------------------
+union Atomic {
+    | List
+    | Dict
+    | IDENTIFIER
     | Integer
-    | Real
+}
+class List {
+    '{' Expression (',' Expression)* '}'
+}
+class Dict {
+    '<|' Expression (',' Expression)* '|>'
+}
+// === symbol === ------------------------------------------------------------------------------------------------------
+atomic class Symbol {
+    IDENTIFIER ('`' IDENTIFIER)*
 }
 
-class Integer {
-    DIGIT+
+class IDENTIFIER {
+    /[$\p{XID_start}][$\p{XID_continue}]*/
 }
-
-class Real {
-    DIGIT+ '.' DIGIT+
-}
-
-class String {
+// === string === ------------------------------------------------------------------------------------------------------
+atomic class String {
     '"' TEXT* '"'
 }
-
 token {
-    IDENTIFIER: /[_A-Za-z][_A-Za-z0-9]*/
-    DIGIT: /[0-9]+/
     TEXT: /[^"]*/
+}
+// === number === ------------------------------------------------------------------------------------------------------
+class Integer {
+    /0|[1-9][0-9]*/
 }
