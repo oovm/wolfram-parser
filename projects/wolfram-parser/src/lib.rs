@@ -6,6 +6,6 @@
 
 pub mod ast;
 
-mod codegen;
+mod parser;
 
-pub use crate::codegen::{Error, Result};
+

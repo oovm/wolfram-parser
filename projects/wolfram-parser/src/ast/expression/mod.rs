@@ -1,8 +1,14 @@
-use crate::ast::WolframOperator;
+use std::ops::Range;
+use super::*;
+
+pub use self::take_part::WolframCallPart;
+
+mod take_part;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum WolframExpression {
     Boolean(bool),
+    String(Box<WolframString>),
     /// Wolfram expression with unary operator
     Unary(Box<UnaryExpression>),
     /// Wolfram expression with binary operator
@@ -11,7 +17,12 @@ pub enum WolframExpression {
     ///
     /// In general this is equivalent to the prefix expression
     Multivariate(Box<MultivariateExpression>),
+
+    List(Box<WolframList>),
+    Association(Box<WolframDict>),
+    Part(Box<WolframCallPart>),
 }
+
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct UnaryExpression {

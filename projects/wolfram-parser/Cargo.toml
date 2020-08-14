@@ -2,7 +2,7 @@
 name = "wolfram-ast"
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
-description = "Rust on Rails!"
+description = "A wolfram language parser written in pure rust"
 repository = "https://github.com/oovm/rust-on-rails"
 documentation = "https://docs.rs/ror"
 readme = "readme.md"
@@ -11,13 +11,17 @@ edition = "2021"
 exclude = ["package.json", "tests/**"]
 
 [dependencies]
-pratt = "0.4.0"
-yggdrasil-rt = "0.0.*"
+serde = { version = "1.0.190", optional = true }
+pratt = { version = "0.4.0", optional = true }
+indexmap = "2.0.2"
+yggdrasil-rt = { version = "0.0.*", optional = true }
 
 [dev-dependencies]
 
 [features]
-default = []
+default = ["parser"]
+serde = ["dep:serde"]
+parser = ["yggdrasil-rt", "pratt"]
 
 [package.metadata.docs.rs]
 all-features = true
