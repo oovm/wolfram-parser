@@ -6,6 +6,7 @@
 
 pub mod ast;
 
+#[cfg(feature = "parser")]
 mod parser;
 
 mod jupyter;
