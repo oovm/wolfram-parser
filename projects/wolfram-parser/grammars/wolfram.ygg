@@ -92,3 +92,13 @@ token {
 class Integer {
     /0|[1-9][0-9]*/
 }
+// === ignores === -----------------------------------------------------------------------------------------------------
+@railroad(false)
+hide class WhiteSpace {
+    /\p{White_Space}+/
+}
+@style(comment)
+@railroad(false)
+hide class Comment {
+     '(*' (Comment | !'*)' | ANY)* '*)'
+}

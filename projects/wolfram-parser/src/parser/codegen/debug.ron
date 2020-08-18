@@ -1463,6 +1463,142 @@ GrammarInfo {
             },
             range: 1639..1676,
         },
+        "WhiteSpace": GrammarRule {
+            name: Identifier("WhiteSpace", 1826..1836),
+            redirect: None,
+            document: "",
+            derives: RuleDerive {
+                derives: {},
+            },
+            atomic: Optimized,
+            inline: false,
+            viewer: GrammarViewer {
+                hidden: true,
+                styles: [],
+                railway: true,
+            },
+            captures: GrammarCaptures {
+                text: false,
+                auto: true,
+                range: "usize",
+            },
+            body: Class {
+                term: Expression {
+                    tag: None,
+                    remark: false,
+                    body: YggdrasilRegex {
+                        raw: "\\p{White_Space}+",
+                        span: 1843..1861,
+                    },
+                },
+            },
+            range: 1798..1863,
+        },
+        "Comment": GrammarRule {
+            name: Identifier("Comment", 1908..1915),
+            redirect: None,
+            document: "",
+            derives: RuleDerive {
+                derives: {},
+            },
+            atomic: Optimized,
+            inline: false,
+            viewer: GrammarViewer {
+                hidden: true,
+                styles: [
+                    "comment",
+                ],
+                railway: true,
+            },
+            captures: GrammarCaptures {
+                text: false,
+                auto: true,
+                range: "usize",
+            },
+            body: Class {
+                term: Expression {
+                    tag: None,
+                    remark: false,
+                    body: ConcatExpression {
+                        sequence: [
+                            Expression {
+                                tag: None,
+                                remark: false,
+                                body: YggdrasilText {
+                                    text: "(*",
+                                    insensitive: false,
+                                    range: 1923..1927,
+                                },
+                            },
+                            Expression {
+                                tag: None,
+                                remark: false,
+                                body: UnaryExpression {
+                                    base: Expression {
+                                        tag: None,
+                                        remark: false,
+                                        body: ChoiceExpression {
+                                            branches: [
+                                                Expression {
+                                                    tag: Identifier("Comment", 1929..1936),
+                                                    remark: false,
+                                                    body: RuleReference {
+                                                        name: Identifier("Comment", 1929..1936),
+                                                        boxed: false,
+                                                        inline: false,
+                                                    },
+                                                },
+                                                Expression {
+                                                    tag: None,
+                                                    remark: false,
+                                                    body: UnaryExpression {
+                                                        base: Expression {
+                                                            tag: None,
+                                                            remark: false,
+                                                            body: YggdrasilText {
+                                                                text: "*)",
+                                                                insensitive: false,
+                                                                range: 1940..1944,
+                                                            },
+                                                        },
+                                                        operators: [
+                                                            Negative,
+                                                        ],
+                                                    },
+                                                },
+                                                Expression {
+                                                    tag: None,
+                                                    remark: false,
+                                                    body: ANY,
+                                                },
+                                            ],
+                                        },
+                                    },
+                                    operators: [
+                                        RepeatsBetween(
+                                            YggdrasilCounter {
+                                                min: 0,
+                                                max: 4294967295,
+                                            },
+                                        ),
+                                    ],
+                                },
+                            },
+                            Expression {
+                                tag: None,
+                                remark: false,
+                                body: YggdrasilText {
+                                    text: "*)",
+                                    insensitive: false,
+                                    range: 1953..1957,
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+            range: 1864..1959,
+        },
     },
     token_sets: {},
     functions: {},

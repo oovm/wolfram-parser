@@ -1,25 +1,50 @@
 use crate::{
     ast::WolframStatements,
-    parser::codegen::{RootNode, StatementsNode, WolframRule},
+    parser::codegen::{RootNode, StatementsNode},
 };
-use diagnostic::{FileCache, FileID};
+
+use crate::{ast::WolframExpression, parser::codegen::ExpressionNode};
 use std::str::FromStr;
-use yggdrasil_rt::YggdrasilError;
+use wolfram_error::{FileCache, FileID, Result, WolframError};
+
+mod parse_expr;
 
 impl FromStr for WolframStatements {
-    type Err = YggdrasilError<WolframRule>;
+    type Err = WolframError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let root = RootNode::from_str(s)?;
-        let mut out = Vec::with_capacity(root.statements.len());
-        for x in root.statements {}
+    fn from_str(s: &str) -> Result<Self> {
+        WolframStatements::build(s, FileID::default())
     }
 }
 
 impl WolframStatements {
-    pub fn from_cache(file: FileID, cache: &FileCache) -> Wolfram<WolframStatements, YggdrasilError<WolframRule>> {
+    /// Load script from io cache
+    pub fn from_cache(file: FileID, cache: &FileCache) -> Result<WolframStatements> {
         let text = cache.fetch(&file)?;
+        WolframStatements::build(&text.to_string(), file)
+    }
+    fn build(text: &str, file: FileID) -> Result<WolframStatements> {
+        match RootNode::from_str(text) {
+            Ok(o) => o.build(file),
+            Err(e) => Err(WolframError::syntax_error(e.variant.to_string()).with_file(file).with_span(e.location)),
+        }
     }
 }
 
-impl StatementsNode {}
+impl RootNode {
+    pub fn build(self, file: FileID) -> Result<WolframStatements> {
+        let mut terms = Vec::with_capacity(self.statements.len());
+        for item in self.statements {
+            terms.push(item.build(file)?)
+        }
+        Ok(WolframStatements { terms })
+    }
+}
+
+impl StatementsNode {
+    pub fn build(self, file: FileID) -> Result<WolframExpression> {
+        match self {
+            Self::Expression(e) => e.build(file),
+        }
+    }
+}

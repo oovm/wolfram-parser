@@ -22,6 +22,8 @@ pub(super) fn parse_cst(input: &str, rule: WolframRule) -> OutputResult<WolframR
         WolframRule::String => parse_string(state),
         WolframRule::TEXT => parse_text(state),
         WolframRule::Integer => parse_integer(state),
+        WolframRule::WhiteSpace => parse_white_space(state),
+        WolframRule::Comment => parse_comment(state),
         WolframRule::HiddenText => unreachable!(),
     })
 }
@@ -323,10 +325,37 @@ fn parse_integer(state: Input) -> Output {
         })
     })
 }
+#[inline]
+fn parse_white_space(state: Input) -> Output {
+    state.rule(WolframRule::WhiteSpace, |s| {
+        s.match_regex({
+            static REGEX: OnceLock<Regex> = OnceLock::new();
+            REGEX.get_or_init(|| Regex::new("^(?x)(\\p{White_Space}+)").unwrap())
+        })
+    })
+}
+#[inline]
+fn parse_comment(state: Input) -> Output {
+    state.rule(WolframRule::Comment, |s| {
+        s.sequence(|s| {
+            Ok(s)
+                .and_then(|s| builtin_text(s, "(*", false))
+                .and_then(|s| {
+                    s.repeat(0..4294967295, |s| {
+                        Err(s)
+                            .or_else(|s| parse_comment(s).and_then(|s| s.tag_node("comment")))
+                            .or_else(|s| s.lookahead(false, |s| builtin_text(s, "*)", false)))
+                            .or_else(|s| builtin_any(s))
+                    })
+                })
+                .and_then(|s| builtin_text(s, "*)", false))
+        })
+    })
+}
 
 /// All rules ignored in ast mode, inline is not recommended
 fn builtin_ignore(state: Input) -> Output {
-    state.repeat(0..u32::MAX, |s| {})
+    state.repeat(0..u32::MAX, |s| parse_white_space(s).or_else(|s| parse_comment(s)))
 }
 
 fn builtin_any(state: Input) -> Output {

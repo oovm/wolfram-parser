@@ -50,13 +50,15 @@ pub enum WolframRule {
     String,
     TEXT,
     Integer,
+    WhiteSpace,
+    Comment,
     /// Label for unnamed text literal
     HiddenText,
 }
 
 impl YggdrasilRule for WolframRule {
     fn is_ignore(&self) -> bool {
-        matches!(self, Self::HiddenText)
+        matches!(self, Self::HiddenText | Self::WhiteSpace | Self::Comment)
     }
 
     fn get_style(&self) -> &'static str {
@@ -81,6 +83,8 @@ impl YggdrasilRule for WolframRule {
             Self::String => "",
             Self::TEXT => "",
             Self::Integer => "",
+            Self::WhiteSpace => "",
+            Self::Comment => "",
             _ => "",
         }
     }
@@ -207,5 +211,16 @@ pub struct TextNode {
 #[derive(Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IntegerNode {
+    pub span: Range<usize>,
+}
+#[derive(Clone, Debug, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct WhiteSpaceNode {
+    pub span: Range<usize>,
+}
+#[derive(Clone, Debug, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct CommentNode {
+    pub comment: Vec<CommentNode>,
     pub span: Range<usize>,
 }

@@ -1,12 +1,10 @@
-use std::ops::Range;
 use super::*;
+use std::ops::Range;
+use wolfram_error::FileID;
 
 pub use self::take_part::WolframCallPart;
 
 mod take_part;
-
-
-
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -40,28 +38,41 @@ impl WolframExpression {
     pub const FALSE: Self = Self::Boolean(false);
     /// Construct a prefix expression
     pub fn prefix(operator: WolframOperator, base: WolframExpression) -> Self {
-        Self::Unary(Box::new(UnaryExpression { operator, base, span: Default::default() }))
+        let span = base.get_range();
+        Self::Unary(Box::new(UnaryExpression { operator, base, span }))
     }
     /// Construct a binary expression
-    pub fn infix(operator: WolframOperator, lhs: WolframExpression, rhs: WolframExpression) -> Self {
-        Self::Binary(Box::new(BinaryExpression { operator, lhs, rhs, span: Default::default() }))
+    pub fn infix(lhs: WolframExpression, operator: WolframOperator, rhs: WolframExpression) -> Self {
+        let start = lhs.get_range().start;
+        let end = rhs.get_range().end;
+        Self::Binary(Box::new(BinaryExpression { operator, lhs, rhs, span: start..end }))
     }
     /// Construct a multivariate expression
-    pub fn suffix(operator: WolframOperator, terms: WolframExpression) -> Self {
-        Self::FullForm(Box::new(MultivariateExpression { operator, terms, span: Default::default() }))
+    pub fn suffix(base: WolframExpression, operator: WolframOperator) -> Self {
+        let span = base.get_range();
+        Self::Unary(Box::new(UnaryExpression { operator, base, span }))
     }
-
+    /// Get the range of expression
     pub fn get_range(&self) -> Range<usize> {
         match self {
-            Self::Boolean(_) => {Default::default()}
-            Self::String(v) => {
-                v.span.clone()
-            }
-            Self::Unary(v) => {v.span.clone()}
-            Self::Binary(v) => {v.span.clone()}
-            Self::List(v) => {v.span.clone()}
-            Self::Association(v) => {v.span.clone()}
-            Self::FullForm(v) => {v.span.clone()}
+            Self::Boolean(_) => Default::default(),
+            Self::String(v) => v.span.clone(),
+            Self::Unary(v) => v.span.clone(),
+            Self::Binary(v) => v.span.clone(),
+            Self::List(v) => v.span.clone(),
+            Self::Association(v) => v.span.clone(),
+            Self::FullForm(v) => v.span.clone(),
+        }
+    }
+    pub fn set_file(&mut self, file: FileID) {
+        match self {
+            WolframExpression::Boolean(_) => {}
+            WolframExpression::String(_) => {}
+            WolframExpression::Unary(_) => {}
+            WolframExpression::Binary(_) => {}
+            WolframExpression::List(_) => {}
+            WolframExpression::Association(_) => {}
+            WolframExpression::FullForm(_) => {}
         }
     }
 }

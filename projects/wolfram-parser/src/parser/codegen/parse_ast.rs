@@ -485,3 +485,46 @@ impl FromStr for IntegerNode {
         Self::from_cst(WolframParser::parse_cst(input, WolframRule::Integer)?)
     }
 }
+#[automatically_derived]
+impl YggdrasilNode for WhiteSpaceNode {
+    type Rule = WolframRule;
+
+    fn get_range(&self) -> Option<Range<usize>> {
+        Some(Range { start: self.span.start as usize, end: self.span.end as usize })
+    }
+    fn from_pair(pair: TokenPair<Self::Rule>) -> Result<Self, YggdrasilError<Self::Rule>> {
+        let _span = pair.get_span();
+        Ok(Self { span: Range { start: _span.start() as usize, end: _span.end() as usize } })
+    }
+}
+#[automatically_derived]
+impl FromStr for WhiteSpaceNode {
+    type Err = YggdrasilError<WolframRule>;
+
+    fn from_str(input: &str) -> Result<Self, YggdrasilError<WolframRule>> {
+        Self::from_cst(WolframParser::parse_cst(input, WolframRule::WhiteSpace)?)
+    }
+}
+#[automatically_derived]
+impl YggdrasilNode for CommentNode {
+    type Rule = WolframRule;
+
+    fn get_range(&self) -> Option<Range<usize>> {
+        Some(Range { start: self.span.start as usize, end: self.span.end as usize })
+    }
+    fn from_pair(pair: TokenPair<Self::Rule>) -> Result<Self, YggdrasilError<Self::Rule>> {
+        let _span = pair.get_span();
+        Ok(Self {
+            comment: pair.take_tagged_items::<CommentNode>(Cow::Borrowed("comment")).collect::<Result<Vec<_>, _>>()?,
+            span: Range { start: _span.start() as usize, end: _span.end() as usize },
+        })
+    }
+}
+#[automatically_derived]
+impl FromStr for CommentNode {
+    type Err = YggdrasilError<WolframRule>;
+
+    fn from_str(input: &str) -> Result<Self, YggdrasilError<WolframRule>> {
+        Self::from_cst(WolframParser::parse_cst(input, WolframRule::Comment)?)
+    }
+}

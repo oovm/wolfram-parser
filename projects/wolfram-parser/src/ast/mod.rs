@@ -1,15 +1,13 @@
 use indexmap::IndexMap;
 use std::ops::Range;
 
+mod collections;
+mod conditional;
 mod expression;
 mod operators;
-mod conditional;
-mod collections;
+mod symbols;
 
-pub use self::expression::*;
-pub use self::operators::*;
-pub use self::collections::*;
-
+pub use self::{collections::*, expression::*, operators::*};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
