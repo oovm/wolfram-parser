@@ -20,7 +20,7 @@ impl FromStr for WolframStatements {
 
 impl WolframStatements {
     pub fn from_cache(file: FileID, cache: &FileCache) -> Result<WolframStatements, YggdrasilError<WolframRule>> {
-        let text = cache.fetch(file)
+        let text = cache.fetch(&file)
     }
 }
 

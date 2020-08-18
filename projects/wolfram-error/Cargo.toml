@@ -1,0 +1,15 @@
+[package]
+name = "wolfram-error"
+version = "0.0.0"
+authors = ["Aster <192607617@qq.com>"]
+description = "Notedown Text parser"
+repository = "https://github.com/GalAster/wolfram-pest"
+readme = "Readme.md"
+license = "MPL-2.0"
+edition = "2021"
+
+
+[dependencies]
+validatus = "0.0.2"
+diagnostic = "0.5.*"
+
