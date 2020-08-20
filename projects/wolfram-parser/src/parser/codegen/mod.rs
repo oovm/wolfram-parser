@@ -212,6 +212,7 @@ pub struct TextNode {
 #[derive(Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IntegerNode {
+    pub text: String,
     pub span: Range<usize>,
 }
 #[derive(Clone, Debug, Hash)]

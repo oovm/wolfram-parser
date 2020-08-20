@@ -1,5 +1,5 @@
 use crate::{
-    ast::WolframStatements,
+    ast::WolframInputs,
     parser::codegen::{RootNode, StatementsNode},
 };
 
@@ -12,21 +12,21 @@ use wolfram_error::{FileCache, FileID, Result, WolframError};
 mod parse_atom;
 mod parse_expr;
 
-impl FromStr for WolframStatements {
+impl FromStr for WolframInputs {
     type Err = WolframError;
 
     fn from_str(s: &str) -> Result<Self> {
-        WolframStatements::build(s, FileID::default())
+        WolframInputs::build(s, FileID::default())
     }
 }
 
-impl WolframStatements {
+impl WolframInputs {
     /// Load script from io cache
-    pub fn from_cache(file: FileID, cache: &FileCache) -> Result<WolframStatements> {
+    pub fn from_cache(file: FileID, cache: &FileCache) -> Result<WolframInputs> {
         let text = cache.fetch(&file)?;
-        WolframStatements::build(&text.to_string(), file)
+        WolframInputs::build(&text.to_string(), file)
     }
-    fn build(text: &str, file: FileID) -> Result<WolframStatements> {
+    fn build(text: &str, file: FileID) -> Result<WolframInputs> {
         match RootNode::from_str(text) {
             Ok(o) => o.build(file),
             Err(e) => Err(WolframError::syntax_error(e.variant.to_string()).with_file(file).with_span(e.location)),
@@ -35,12 +35,12 @@ impl WolframStatements {
 }
 
 impl RootNode {
-    pub fn build(self, file: FileID) -> Result<WolframStatements> {
+    pub fn build(self, file: FileID) -> Result<WolframInputs> {
         let mut terms = Vec::with_capacity(self.statements.len());
         for item in self.statements {
             terms.push(item.build(file)?)
         }
-        Ok(WolframStatements { terms })
+        Ok(WolframInputs { terms })
     }
 }
 

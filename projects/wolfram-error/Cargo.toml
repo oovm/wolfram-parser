@@ -10,6 +10,6 @@ edition = "2021"
 
 
 [dependencies]
-validatus = "0.0.2"
-diagnostic = "0.5.*"
+validatus = "0.0.3"
+diagnostic = "0.5.6"
 

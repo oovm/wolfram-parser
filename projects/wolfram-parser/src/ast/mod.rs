@@ -1,7 +1,7 @@
 pub use self::{collections::*, expression::*, number::*, operators::*, symbols::*};
 use indexmap::IndexMap;
 use std::{
-    fmt::{Display, Formatter, Write},
+    fmt::{Display, Formatter},
     hash::{Hash, Hasher},
     ops::Range,
 };
@@ -16,7 +16,7 @@ mod number;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct WolframStatements {
+pub struct WolframInputs {
     pub terms: Vec<WolframExpression>,
 }
 

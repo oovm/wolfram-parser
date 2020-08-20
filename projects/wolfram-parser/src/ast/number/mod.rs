@@ -7,7 +7,7 @@ pub struct WolframNumber {
     /// The base of the number
     pub base: u8,
     /// The power of th number
-    pub power: isize,
+    pub power: i32,
     /// Integer part of the number
     pub integer: String,
     /// The digits after `.`
@@ -18,11 +18,14 @@ pub struct WolframNumber {
     pub span: Range<usize>,
 }
 
+/// The accuracy or precision of number
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum NumberResidual {
-    Accuracy(f64),
-    Precision(f64),
+    ///
+    Accuracy(f32),
+    ///
+    Precision(f32),
     /// 53 log₁₀2 = 15.954589770191003
     MachinePrecision,
 }
@@ -45,11 +48,11 @@ impl Hash for NumberResidual {
         match self {
             Self::Accuracy(v) => {
                 state.write_u8(0);
-                state.write_u64(v.to_bits());
+                state.write_u32(v.to_bits());
             }
             Self::Precision(v) => {
                 state.write_u8(1);
-                state.write_u64(v.to_bits());
+                state.write_u32(v.to_bits());
             }
             Self::MachinePrecision => {
                 state.write_u8(2);
@@ -87,6 +90,12 @@ impl Display for WolframNumber {
     }
 }
 
+impl From<WolframNumber> for WolframExpression {
+    fn from(value: WolframNumber) -> Self {
+        Self::Number(Box::new(value))
+    }
+}
+
 impl WolframNumber {
     /// Create a base 10 integer number
     pub fn integer(text: String, span: Range<usize>) -> Self {
@@ -95,7 +104,7 @@ impl WolframNumber {
             power: 0,
             integer: text,
             digits: String::new(),
-            control: NumberResidual::Accuracy(f64::INFINITY),
+            control: NumberResidual::Accuracy(f32::INFINITY),
             span,
         }
     }
@@ -105,8 +114,19 @@ impl WolframNumber {
             Self { base: 10, power: 0, integer, digits: decimal, control: NumberResidual::MachinePrecision, span }
         }
         else {
-            let control = NumberResidual::Accuracy(decimal.len() as f64);
+            let control = NumberResidual::Accuracy(decimal.len() as f32);
             Self { base: 10, power: 0, integer, digits: decimal, control, span }
+        }
+    }
+}
+
+impl NumberResidual {
+    /// Check if it's a infinity precision number
+    pub fn is_infinity(&self) -> bool {
+        match self {
+            Self::Accuracy(v) => v.eq(&f32::INFINITY),
+            Self::Precision(v) => v.eq(&f32::INFINITY),
+            Self::MachinePrecision => false,
         }
     }
 }

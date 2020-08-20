@@ -1,4 +1,5 @@
 use super::*;
+use crate::ast::WolframNumber;
 
 impl AtomicNode {
     pub fn build(self, file: FileID) -> Result<WolframExpression> {
@@ -7,9 +8,7 @@ impl AtomicNode {
                 todo!()
             }
             AtomicNode::Symbol(v) => Ok(v.build(file)?.into()),
-            AtomicNode::Integer(v) => {
-                todo!()
-            }
+            AtomicNode::Integer(v) => Ok(WolframNumber::integer(v.text, v.span).into()),
             AtomicNode::List(_) => {
                 todo!()
             }

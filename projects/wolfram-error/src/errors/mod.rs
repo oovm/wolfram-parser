@@ -1,4 +1,4 @@
-use diagnostic::{FileID, FileSpan};
+use diagnostic::{Diagnostic, FileID, FileSpan, ReportKind};
 use std::{
     error::Error,
     fmt::{Debug, Display, Formatter},
@@ -17,6 +17,16 @@ impl WolframError {
     /// Get the kind of the error
     pub fn kind(&self) -> &WolframErrorKind {
         &*self.kind
+    }
+
+    pub fn as_report(&self) -> Diagnostic {
+        match self.kind() {
+            WolframErrorKind::RuntimeError { message } => Diagnostic::new(ReportKind::Error).with_message(message).finish(),
+            WolframErrorKind::SyntaxError { message, location } => Diagnostic::new(ReportKind::Error)
+                .with_message(message)
+                .with_location(location.get_file(), Some(location.get_start()))
+                .finish(),
+        }
     }
 }
 

@@ -1433,7 +1433,7 @@ GrammarInfo {
             range: 1503..1516,
         },
         "Integer": GrammarRule {
-            name: Identifier("Integer", 1646..1653),
+            name: Identifier("Integer", 1651..1658),
             redirect: None,
             document: "",
             derives: RuleDerive {
@@ -1447,7 +1447,7 @@ GrammarInfo {
                 railway: true,
             },
             captures: GrammarCaptures {
-                text: false,
+                text: true,
                 auto: true,
                 range: "usize",
             },
@@ -1457,14 +1457,14 @@ GrammarInfo {
                     remark: false,
                     body: YggdrasilRegex {
                         raw: "0|[1-9][0-9]*",
-                        span: 1660..1675,
+                        span: 1665..1680,
                     },
                 },
             },
-            range: 1640..1677,
+            range: 1640..1682,
         },
         "WhiteSpace": GrammarRule {
-            name: Identifier("WhiteSpace", 1827..1837),
+            name: Identifier("WhiteSpace", 1832..1842),
             redirect: None,
             document: "",
             derives: RuleDerive {
@@ -1488,14 +1488,14 @@ GrammarInfo {
                     remark: false,
                     body: YggdrasilRegex {
                         raw: "\\p{White_Space}+",
-                        span: 1844..1862,
+                        span: 1849..1867,
                     },
                 },
             },
-            range: 1799..1864,
+            range: 1804..1869,
         },
         "Comment": GrammarRule {
-            name: Identifier("Comment", 1909..1916),
+            name: Identifier("Comment", 1914..1921),
             redirect: None,
             document: "",
             derives: RuleDerive {
@@ -1527,7 +1527,7 @@ GrammarInfo {
                                 body: YggdrasilText {
                                     text: "(*",
                                     insensitive: false,
-                                    range: 1924..1928,
+                                    range: 1929..1933,
                                 },
                             },
                             Expression {
@@ -1540,10 +1540,10 @@ GrammarInfo {
                                         body: ChoiceExpression {
                                             branches: [
                                                 Expression {
-                                                    tag: Identifier("Comment", 1930..1937),
+                                                    tag: Identifier("Comment", 1935..1942),
                                                     remark: false,
                                                     body: RuleReference {
-                                                        name: Identifier("Comment", 1930..1937),
+                                                        name: Identifier("Comment", 1935..1942),
                                                         boxed: false,
                                                         inline: false,
                                                     },
@@ -1558,7 +1558,7 @@ GrammarInfo {
                                                             body: YggdrasilText {
                                                                 text: "*)",
                                                                 insensitive: false,
-                                                                range: 1941..1945,
+                                                                range: 1946..1950,
                                                             },
                                                         },
                                                         operators: [
@@ -1590,14 +1590,14 @@ GrammarInfo {
                                 body: YggdrasilText {
                                     text: "*)",
                                     insensitive: false,
-                                    range: 1954..1958,
+                                    range: 1959..1963,
                                 },
                             },
                         ],
                     },
                 },
             },
-            range: 1865..1960,
+            range: 1870..1965,
         },
     },
     token_sets: {},
