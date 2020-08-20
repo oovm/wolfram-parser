@@ -567,7 +567,7 @@ HIDE</text>
 <text class="comment" id="Atomic" x="61" y="798">
 Atomic</text>
 <g class="choice">
-<path d=" M 97 793 h 24 m 52 0 h 72 m -33 0 l -5 -5 m 0 10 l 5 -5 m 33 0"/>
+<path d=" M 97 793 h 24 m 52 0 h 48"/>
 <a class="link" xlink:href="#List">
 <g class="symbol">
 <rect height="22" width="52" x="121" y="782"/>
@@ -575,10 +575,10 @@ Atomic</text>
 List</text>
 </g>
 </a>
-<path d=" M 97 793 a 12 12 0 0 1 12 12 v 9 m 124 0 v -9 a 12 12 0 0 1 12 -12"/>
-<path d=" M 109 814 v 33 m 124 0 v -33"/>
-<path d=" M 109 847 v 33 m 124 0 v -33"/>
-<path d=" M 109 814 v 0 a 12 12 0 0 0 12 12 m 52 0 h 48 a 12 12 0 0 0 12 -12 v 0"/>
+<path d=" M 97 793 a 12 12 0 0 1 12 12 v 9 m 100 0 v -9 a 12 12 0 0 1 12 -12"/>
+<path d=" M 109 814 v 33 m 100 0 v -33"/>
+<path d=" M 109 847 v 33 m 100 0 v -33"/>
+<path d=" M 109 814 v 0 a 12 12 0 0 0 12 12 m 52 0 h 24 a 12 12 0 0 0 12 -12 v 0"/>
 <a class="link" xlink:href="#Dict">
 <g class="symbol">
 <rect height="22" width="52" x="121" y="815"/>
@@ -586,15 +586,15 @@ List</text>
 Dict</text>
 </g>
 </a>
-<path d=" M 109 847 v 0 a 12 12 0 0 0 12 12 m 100 0 h 0 a 12 12 0 0 0 12 -12 v 0"/>
-<a class="link" xlink:href="#IDENTIFIER">
+<path d=" M 109 847 v 0 a 12 12 0 0 0 12 12 m 68 0 h 8 a 12 12 0 0 0 12 -12 v 0"/>
+<a class="link" xlink:href="#Symbol">
 <g class="symbol">
-<rect height="22" width="100" x="121" y="848"/>
-<text x="171" y="864">
-IDENTIFIER</text>
+<rect height="22" width="68" x="121" y="848"/>
+<text x="155" y="864">
+Symbol</text>
 </g>
 </a>
-<path d=" M 109 880 v 0 a 12 12 0 0 0 12 12 m 76 0 h 24 a 12 12 0 0 0 12 -12 v 0"/>
+<path d=" M 109 880 v 0 a 12 12 0 0 0 12 12 m 76 0 h 0 a 12 12 0 0 0 12 -12 v 0"/>
 <a class="link" xlink:href="#Integer">
 <g class="symbol">
 <rect height="22" width="76" x="121" y="881"/>
@@ -603,10 +603,10 @@ Integer</text>
 </g>
 </a>
 </g>
-<path d=" M 255 793 h 5 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5"/>
+<path d=" M 231 793 h 5 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5"/>
 <path d=" M 25 793 h 10"/>
 <path d=" M 87 793 h 10"/>
-<path d=" M 245 793 h 10"/>
+<path d=" M 221 793 h 10"/>
 </g>
 <g class="sequence">
 <path d=" M 10 926 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5 m 10 0 h 5"/>

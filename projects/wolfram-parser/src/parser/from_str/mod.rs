@@ -3,10 +3,13 @@ use crate::{
     parser::codegen::{RootNode, StatementsNode},
 };
 
-use crate::{ast::WolframExpression, parser::codegen::ExpressionNode};
+use crate::{
+    ast::{WolframExpression, WolframSymbol},
+    parser::codegen::{AtomicNode, ExpressionNode, SymbolNode},
+};
 use std::str::FromStr;
 use wolfram_error::{FileCache, FileID, Result, WolframError};
-
+mod parse_atom;
 mod parse_expr;
 
 impl FromStr for WolframStatements {

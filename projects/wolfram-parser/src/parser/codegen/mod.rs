@@ -170,9 +170,9 @@ pub struct PartCallNode {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum AtomicNode {
     Dict(DictNode),
-    Identifier(IdentifierNode),
     Integer(IntegerNode),
     List(ListNode),
+    Symbol(SymbolNode),
 }
 #[derive(Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -195,6 +195,7 @@ pub struct SymbolNode {
 #[derive(Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IdentifierNode {
+    pub text: String,
     pub span: Range<usize>,
 }
 #[derive(Clone, Debug, Hash)]

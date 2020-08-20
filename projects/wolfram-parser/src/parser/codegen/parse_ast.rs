@@ -303,9 +303,9 @@ impl YggdrasilNode for AtomicNode {
     fn get_range(&self) -> Option<Range<usize>> {
         match self {
             Self::Dict(s) => s.get_range(),
-            Self::Identifier(s) => s.get_range(),
             Self::Integer(s) => s.get_range(),
             Self::List(s) => s.get_range(),
+            Self::Symbol(s) => s.get_range(),
         }
     }
     fn from_pair(pair: TokenPair<Self::Rule>) -> Result<Self, YggdrasilError<Self::Rule>> {
@@ -313,14 +313,14 @@ impl YggdrasilNode for AtomicNode {
         if let Ok(s) = pair.take_tagged_one::<DictNode>(Cow::Borrowed("dict")) {
             return Ok(Self::Dict(s));
         }
-        if let Ok(s) = pair.take_tagged_one::<IdentifierNode>(Cow::Borrowed("identifier")) {
-            return Ok(Self::Identifier(s));
-        }
         if let Ok(s) = pair.take_tagged_one::<IntegerNode>(Cow::Borrowed("integer")) {
             return Ok(Self::Integer(s));
         }
         if let Ok(s) = pair.take_tagged_one::<ListNode>(Cow::Borrowed("list")) {
             return Ok(Self::List(s));
+        }
+        if let Ok(s) = pair.take_tagged_one::<SymbolNode>(Cow::Borrowed("symbol")) {
+            return Ok(Self::Symbol(s));
         }
         Err(YggdrasilError::invalid_node(WolframRule::Atomic, _span))
     }
@@ -411,7 +411,7 @@ impl YggdrasilNode for IdentifierNode {
     }
     fn from_pair(pair: TokenPair<Self::Rule>) -> Result<Self, YggdrasilError<Self::Rule>> {
         let _span = pair.get_span();
-        Ok(Self { span: Range { start: _span.start() as usize, end: _span.end() as usize } })
+        Ok(Self { text: pair.get_string(), span: Range { start: _span.start() as usize, end: _span.end() as usize } })
     }
 }
 #[automatically_derived]

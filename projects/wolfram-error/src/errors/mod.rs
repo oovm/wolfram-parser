@@ -1,5 +1,9 @@
 use diagnostic::{FileID, FileSpan};
-use std::ops::Range;
+use std::{
+    error::Error,
+    fmt::{Debug, Display, Formatter},
+    ops::Range,
+};
 
 pub type Result<T = ()> = std::result::Result<T, WolframError>;
 
@@ -16,9 +20,40 @@ impl WolframError {
     }
 }
 
+#[derive(Debug)]
 pub enum WolframErrorKind {
     RuntimeError { message: String },
     SyntaxError { message: String, location: FileSpan },
+}
+impl Error for WolframError {}
+
+impl Error for WolframErrorKind {}
+impl Debug for WolframError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Debug::fmt(&self.kind, f)
+    }
+}
+
+impl Display for WolframError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(&self.kind, f)
+    }
+}
+impl Display for WolframErrorKind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            WolframErrorKind::RuntimeError { message } => {
+                f.write_str("Runtime Error: ")?;
+                f.write_str(message)
+            }
+            WolframErrorKind::SyntaxError { message, location } => {
+                f.write_str("Syntax Error: ")?;
+                f.write_str(message)?;
+                f.write_str(" at ")?;
+                Debug::fmt(location, f)
+            }
+        }
+    }
 }
 
 impl From<WolframErrorKind> for WolframError {

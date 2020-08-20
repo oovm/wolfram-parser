@@ -1,4 +1,4 @@
-use pratt::Precedence;
+use pratt::{Affix, Associativity, Precedence};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum WolframOperator {
@@ -16,6 +16,8 @@ pub enum WolframOperator {
     Divide,
     /// [Power, ^](https://reference.wolfram.com/language/ref/Power.html)
     Power,
+    /// [Map, /@](https://reference.wolfram.com/language/ref/Map.html)
+    Map,
     /// [Prefix, @](https://reference.wolfram.com/language/ref/Prefix.html)
     Prefix,
     /// [Postfix, //](https://reference.wolfram.com/language/ref/Postfix.html)
@@ -27,16 +29,30 @@ pub enum WolframOperator {
 impl WolframOperator {
     /// Get the precedence of expression
     pub fn precedence(&self) -> Precedence {
+        // `Precedence /@ {Plus, Minus}`
         Precedence(match self {
-            Self::Plus => { 100 }
-            Self::Minus => { 100 }
-            Self::Times => { 100 }
-            Self::Divide => { 100 }
-            Self::Power => { 100 }
-            Self::Prefix => { 100 }
-            Self::Postfix => { 100 }
-            Self::Subtract => { 100 }
-            _ => unimplemented!()
+            // prefix
+            Self::Minus => 480,
+            // infix
+            Self::Plus => 310,
+            Self::Subtract => 310,
+            Self::Times => 400,
+            Self::Divide => 470,
+            Self::Power => 590,
+            Self::Map => 620,
+            _ => unimplemented!("{self:?}"),
         })
+    }
+    /// Get the precedence and associativity of an expression
+    pub fn as_affix(&self) -> Affix {
+        match self {
+            // prefix
+            Self::Minus => Affix::Prefix(self.precedence()),
+            // infix
+            Self::Plus | Self::Subtract | Self::Times | Self::Divide => Affix::Infix(self.precedence(), Associativity::Left),
+            Self::Map => Affix::Infix(self.precedence(), Associativity::Left),
+            Self::Power => Affix::Infix(self.precedence(), Associativity::Right),
+            _ => unimplemented!("{self:?}"),
+        }
     }
 }

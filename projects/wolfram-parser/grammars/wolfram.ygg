@@ -64,7 +64,7 @@ class PartCall {
 union Atomic {
     | List
     | Dict
-    | IDENTIFIER
+    | Symbol
     | Integer
 }
 class List {
@@ -78,7 +78,7 @@ atomic class Symbol {
     IDENTIFIER ('`' IDENTIFIER)*
 }
 
-class IDENTIFIER {
+text class IDENTIFIER {
     /[$\p{XID_start}][$\p{XID_continue}]*/
 }
 // === string === ------------------------------------------------------------------------------------------------------

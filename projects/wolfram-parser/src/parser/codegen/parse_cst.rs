@@ -211,7 +211,7 @@ fn parse_atomic(state: Input) -> Output {
         Err(s)
             .or_else(|s| parse_list(s).and_then(|s| s.tag_node("list")))
             .or_else(|s| parse_dict(s).and_then(|s| s.tag_node("dict")))
-            .or_else(|s| parse_identifier(s).and_then(|s| s.tag_node("identifier")))
+            .or_else(|s| parse_symbol(s).and_then(|s| s.tag_node("symbol")))
             .or_else(|s| parse_integer(s).and_then(|s| s.tag_node("integer")))
     })
 }

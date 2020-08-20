@@ -62,17 +62,29 @@ impl WolframExpression {
             Self::List(v) => v.span.clone(),
             Self::Association(v) => v.span.clone(),
             Self::FullForm(v) => v.span.clone(),
+            Self::Symbol(v) => v.span.clone(),
+            Self::Number(v) => v.span.clone(),
         }
     }
+
     pub fn set_file(&mut self, file: FileID) {
         match self {
-            WolframExpression::Boolean(_) => {}
-            WolframExpression::String(_) => {}
-            WolframExpression::Unary(_) => {}
-            WolframExpression::Binary(_) => {}
-            WolframExpression::List(_) => {}
-            WolframExpression::Association(_) => {}
-            WolframExpression::FullForm(_) => {}
+            Self::Unary(v) => {
+                v.base.set_file(file);
+            }
+            Self::Binary(v) => {
+                v.lhs.set_file(file);
+                v.rhs.set_file(file);
+            }
+            Self::List(_) => {}
+            Self::Association(_) => {}
+            Self::FullForm(_) => {}
+            Self::Symbol(v) => v.file = file,
+            _ => {}
         }
+    }
+    pub fn with_file(mut self, file: FileID) -> Self {
+        self.set_file(file);
+        self
     }
 }
