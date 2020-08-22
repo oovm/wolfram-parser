@@ -6,28 +6,39 @@ pub use self::take_part::WolframCallPart;
 
 mod take_part;
 
+/// A valid wolfram expression
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct UnaryExpression {
+    /// The operator of this expression
     pub operator: WolframOperator,
+    /// The basement of this expression
     pub base: WolframExpression,
+    /// The input position of this expression
     pub span: Range<usize>,
 }
-
+/// A valid wolfram expression
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BinaryExpression {
+    /// The operator of this expression
     pub operator: WolframOperator,
+    /// The left hand side of this expression
     pub lhs: WolframExpression,
+    /// The right hand side of this expression
     pub rhs: WolframExpression,
+    /// The input position of this expression
     pub span: Range<usize>,
 }
-
+/// A wolfram [FullForm](https://reference.wolfram.com/language/ref/FullForm.html) expression
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MultivariateExpression {
+    /// The operator of this expression
     pub full_form: bool,
+    /// The operator of this expression
     pub terms: WolframExpression,
+    /// The input position of this expression
     pub span: Range<usize>,
 }
 
@@ -66,7 +77,7 @@ impl WolframExpression {
             Self::Number(v) => v.span.clone(),
         }
     }
-
+    /// Get the file of expression
     pub fn set_file(&mut self, file: FileID) {
         match self {
             Self::Unary(v) => {
@@ -83,6 +94,7 @@ impl WolframExpression {
             _ => {}
         }
     }
+    /// Get the file of expression
     pub fn with_file(mut self, file: FileID) -> Self {
         self.set_file(file);
         self

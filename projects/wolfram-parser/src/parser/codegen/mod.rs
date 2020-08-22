@@ -116,11 +116,9 @@ pub struct ExpressionNode {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum TermNode {
     Atomic(AtomicNode),
-    FunctionCall(FunctionCallNode),
     GroupExpr(GroupExprNode),
     Infix(InfixNode),
     InfixExpr(InfixExprNode),
-    PartCall(PartCallNode),
     Prefix(PrefixNode),
     Suffix(SuffixNode),
 }

@@ -14,7 +14,7 @@ union Statements {
 }
 // === expressions === --------------------------------------------------------------------------------------------------
 class Expression {
-    Term* Eos?
+    Term+ Eos?
 }
 
 union Term {
@@ -24,18 +24,15 @@ union Term {
     | GroupExpr
     | Atomic
     | Suffix
-    | FunctionCall
-    | PartCall
 }
 text class Prefix {
     /
-       !
+       [!]
     /
 }
 
 text class Infix {
-    /
-       ([^+*\/]-)=?
+    / [+\\-*\/]=?
     | [\/]{2}
     /
 }

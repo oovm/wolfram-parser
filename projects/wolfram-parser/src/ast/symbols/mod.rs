@@ -9,8 +9,11 @@ use wolfram_error::{FileID, FileSpan};
 #[derive(Clone, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct WolframSymbol {
+    /// The name of this symbol
     pub namepath: Vec<String>,
+    /// The file this symbol is defined in
     pub file: FileID,
+    /// The input position of this symbol
     pub span: Range<usize>,
 }
 
@@ -44,5 +47,14 @@ impl WolframSymbol {
     /// Get the definition location of the symbol
     pub fn as_file_span(&self) -> FileSpan {
         self.file.with_range(self.span.clone())
+    }
+    /// The name of the symbol
+    pub fn name(&self) -> Option<&str> {
+        let last = self.namepath.last()?;
+        if last.is_empty() { None } else { Some(last) }
+    }
+    /// The namepath of the symbol
+    pub fn namespace(&self) -> &[String] {
+        &self.namepath[..self.namepath.len() - 1]
     }
 }

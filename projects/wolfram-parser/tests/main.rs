@@ -1,5 +1,5 @@
-use wolfram_ast::ast::{WolframExpression, WolframInputs};
-use wolfram_error::{FileCache, Result, WolframError};
+use wolfram_ast::ast::WolframInputs;
+use wolfram_error::{FileCache, Result};
 
 #[test]
 fn ready() {
@@ -15,25 +15,25 @@ fn test_vm() -> Result<()> {
     let input4 = store.load_text("x^5y", "input4");
     match WolframInputs::from_cache(input1, &store) {
         Ok(o) => {
-            println!("{o:?}")
+            println!("{o:#?}")
         }
         Err(e) => e.as_report().eprint(&store)?,
     };
     match WolframInputs::from_cache(input2, &store) {
         Ok(o) => {
-            println!("{o:?}")
+            println!("{o:#?}")
         }
         Err(e) => e.as_report().eprint(&store)?,
     };
     match WolframInputs::from_cache(input3, &store) {
         Ok(o) => {
-            println!("{o:?}")
+            println!("{o:#?}")
         }
         Err(e) => e.as_report().eprint(&store)?,
     };
     match WolframInputs::from_cache(input4, &store) {
         Ok(o) => {
-            println!("{o:?}")
+            println!("{o:#?}")
         }
         Err(e) => e.as_report().eprint(&store)?,
     };

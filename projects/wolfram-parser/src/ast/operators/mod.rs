@@ -1,5 +1,6 @@
 use pratt::{Affix, Associativity, Precedence};
 
+/// Wolfram Language operators
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum WolframOperator {
     /// [Not, !](https://reference.wolfram.com/language/ref/Not.html)

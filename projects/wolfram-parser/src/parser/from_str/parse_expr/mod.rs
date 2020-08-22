@@ -36,8 +36,8 @@ impl PrattParser<IntoIter<TermNode>> for ExprResolver {
             TermNode::Atomic(_) => Affix::Nilfix,
             // suffix
             TermNode::Suffix(v) => v.as_operator().as_affix(),
-            TermNode::FunctionCall(_) => Affix::Postfix(Precedence(u32::MAX)),
-            TermNode::PartCall(_) => Affix::Postfix(Precedence(u32::MAX)),
+            // TermNode::FunctionCall(_) => Affix::Postfix(Precedence(u32::MAX)),
+            // TermNode::PartCall(_) => Affix::Postfix(Precedence(u32::MAX)),
         };
         Ok(affix)
     }
@@ -78,12 +78,8 @@ impl PrattParser<IntoIter<TermNode>> for ExprResolver {
     fn postfix(&mut self, lhs: Self::Output, tree: Self::Input) -> std::result::Result<Self::Output, Self::Error> {
         let o = match tree {
             TermNode::Suffix(v) => v.as_operator(),
-            TermNode::FunctionCall(_) => {
-                unimplemented!()
-            }
-            TermNode::PartCall(_) => {
-                unimplemented!()
-            }
+            // TermNode::FunctionCall(_) =>  unimplemented!(),
+            // TermNode::PartCall(_) =>  unimplemented!(),
             _ => unreachable!(),
         };
         Ok(WolframExpression::suffix(lhs, o))

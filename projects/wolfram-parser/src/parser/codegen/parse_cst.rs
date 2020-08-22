@@ -65,7 +65,7 @@ fn parse_expression(state: Input) -> Output {
         s.sequence(|s| {
             Ok(s)
                 .and_then(|s| {
-                    s.repeat(0..4294967295, |s| {
+                    s.repeat(1..4294967295, |s| {
                         s.sequence(|s| {
                             Ok(s).and_then(|s| builtin_ignore(s)).and_then(|s| parse_term(s).and_then(|s| s.tag_node("term")))
                         })
@@ -86,8 +86,6 @@ fn parse_term(state: Input) -> Output {
             .or_else(|s| parse_group_expr(s).and_then(|s| s.tag_node("group_expr")))
             .or_else(|s| parse_atomic(s).and_then(|s| s.tag_node("atomic")))
             .or_else(|s| parse_suffix(s).and_then(|s| s.tag_node("suffix")))
-            .or_else(|s| parse_function_call(s).and_then(|s| s.tag_node("function_call")))
-            .or_else(|s| parse_part_call(s).and_then(|s| s.tag_node("part_call")))
     })
 }
 #[inline]
@@ -95,7 +93,7 @@ fn parse_prefix(state: Input) -> Output {
     state.rule(WolframRule::Prefix, |s| {
         s.match_regex({
             static REGEX: OnceLock<Regex> = OnceLock::new();
-            REGEX.get_or_init(|| Regex::new("^(?x)(!)").unwrap())
+            REGEX.get_or_init(|| Regex::new("^(?x)([!])").unwrap())
         })
     })
 }
@@ -106,7 +104,7 @@ fn parse_infix(state: Input) -> Output {
             static REGEX: OnceLock<Regex> = OnceLock::new();
             REGEX.get_or_init(|| {
                 Regex::new(
-                    "^(?x)(([^+*/]-)=?
+                    "^(?x)([+\\-*/]=?
     | [/]{2})",
                 )
                 .unwrap()

@@ -98,11 +98,9 @@ impl YggdrasilNode for TermNode {
     fn get_range(&self) -> Option<Range<usize>> {
         match self {
             Self::Atomic(s) => s.get_range(),
-            Self::FunctionCall(s) => s.get_range(),
             Self::GroupExpr(s) => s.get_range(),
             Self::Infix(s) => s.get_range(),
             Self::InfixExpr(s) => s.get_range(),
-            Self::PartCall(s) => s.get_range(),
             Self::Prefix(s) => s.get_range(),
             Self::Suffix(s) => s.get_range(),
         }
@@ -112,9 +110,6 @@ impl YggdrasilNode for TermNode {
         if let Ok(s) = pair.take_tagged_one::<AtomicNode>(Cow::Borrowed("atomic")) {
             return Ok(Self::Atomic(s));
         }
-        if let Ok(s) = pair.take_tagged_one::<FunctionCallNode>(Cow::Borrowed("function_call")) {
-            return Ok(Self::FunctionCall(s));
-        }
         if let Ok(s) = pair.take_tagged_one::<GroupExprNode>(Cow::Borrowed("group_expr")) {
             return Ok(Self::GroupExpr(s));
         }
@@ -123,9 +118,6 @@ impl YggdrasilNode for TermNode {
         }
         if let Ok(s) = pair.take_tagged_one::<InfixExprNode>(Cow::Borrowed("infix_expr")) {
             return Ok(Self::InfixExpr(s));
-        }
-        if let Ok(s) = pair.take_tagged_one::<PartCallNode>(Cow::Borrowed("part_call")) {
-            return Ok(Self::PartCall(s));
         }
         if let Ok(s) = pair.take_tagged_one::<PrefixNode>(Cow::Borrowed("prefix")) {
             return Ok(Self::Prefix(s));
