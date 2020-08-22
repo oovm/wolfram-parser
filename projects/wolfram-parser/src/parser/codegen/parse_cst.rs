@@ -104,7 +104,7 @@ fn parse_infix(state: Input) -> Output {
             static REGEX: OnceLock<Regex> = OnceLock::new();
             REGEX.get_or_init(|| {
                 Regex::new(
-                    "^(?x)([+\\-*/]=?
+                    "^(?x)([\\^+\\-*/]=?
     | [/]{2})",
                 )
                 .unwrap()

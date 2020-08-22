@@ -52,9 +52,9 @@ impl Debug for WolframExpression {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Boolean(v) => Debug::fmt(v, f),
-            Self::Number(v) => Debug::fmt(v, f),
+            Self::Number(v) => Display::fmt(v, f),
             Self::String(v) => Debug::fmt(v, f),
-            Self::Symbol(v) => Debug::fmt(v, f),
+            Self::Symbol(v) => Display::fmt(v, f),
             Self::Unary(v) => Debug::fmt(v, f),
             Self::Binary(v) => Debug::fmt(v, f),
             Self::List(v) => Debug::fmt(v, f),

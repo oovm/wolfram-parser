@@ -208,15 +208,15 @@ Prefix</text>
 <text class="comment" id="Infix" x="57" y="468">
 Infix</text>
 <g class="string">
-<rect height="22" rx="10" ry="10" width="196" x="90" y="452"/>
-<text x="188" y="468">
-[+\-*/]=?
+<rect height="22" rx="10" ry="10" width="212" x="90" y="452"/>
+<text x="196" y="468">
+[\^+\-*/]=?
 | [/]{2}</text>
 </g>
-<path d=" M 296 463 h 5 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5"/>
+<path d=" M 312 463 h 5 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5"/>
 <path d=" M 25 463 h 10"/>
 <path d=" M 80 463 h 10"/>
-<path d=" M 286 463 h 10"/>
+<path d=" M 302 463 h 10"/>
 </g>
 <g class="sequence">
 <path d=" M 10 497 a 5 5 0 0 1 5 -5 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 a 5 5 0 0 1 -5 -5 m 10 0 h 5"/>

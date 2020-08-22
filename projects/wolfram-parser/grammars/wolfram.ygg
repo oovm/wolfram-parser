@@ -32,7 +32,7 @@ text class Prefix {
 }
 
 text class Infix {
-    / [+\\-*\/]=?
+    / [\\^+\\-*\/]=?
     | [\/]{2}
     /
 }
