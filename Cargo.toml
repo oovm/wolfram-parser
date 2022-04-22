@@ -1,17 +1,13 @@
-[package]
-name = "wolfram-pest"
-version = "0.2.0"
-authors = ["Aster <192607617@qq.com>"]
-description = "Notedown Text parser"
-repository = "https://github.com/GalAster/wolfram-pest"
-readme = "Readme.md"
-license = "MPL-2.0"
-edition = "2018"
+[workspace]
+members = ["projects/*"]
+default-members = [
+    "projects/wolfram-ast",
+    "projects/wolfram-parser",
+]
+exclude = [
+    "projects/.DS_Store",
+]
 
-
-[dependencies]
-pest = "2.1"
-
-[dev-dependencies]
-pest_generator = "2.1"
-quote = "1.0"
+[profile.release]
+lto = true
+panic = "abort"

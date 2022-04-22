@@ -1,0 +1,197 @@
+program = _{SOI~statement* ~ EOI}
+
+statement = _{
+    emptyStatement
+  | expression
+}
+/*====================================================================================================================*/
+emptyStatement = {eos}
+eos = {Semicolon}
+comma_or_semi = _{Comma|Semicolon}
+/*====================================================================================================================*/
+apply = !{
+     "[" ~ apply_kv? ~ (Comma ~ apply_kv)* ~ Comma? ~"]"
+}
+apply_kv = {SYMBOL~ Colon ~ expr|expr}
+
+
+
+///#61AFEF
+function_name = {SYMBOL}
+function_module = {Dot ~ (SYMBOL ~ Dot)*}
+/*====================================================================================================================*/
+expression =  {expr~eos?}
+expr       = !{term ~ (Infix ~ term)*}
+term       = ${Prefix* ~ node ~ (Suffix|(!NEWLINE ~ WHITESPACE)* ~ slice)*}
+node       =  {"(" ~ expr ~ ")"|apply_call|derivative|space_call|data}
+apply_call = ${Symbol ~ ((!NEWLINE ~ WHITESPACE)* ~ apply)+}
+derivative = ${Symbol ~ Derivative ~ (!NEWLINE ~ WHITESPACE)* ~ apply}
+space_call = ${(apply_call|Number|Symbol) ~ ((!NEWLINE ~ WHITESPACE)* ~ (apply_call|Number|Symbol))+}
+/*====================================================================================================================*/
+data = ${dict|list|Slot|Number|String|Symbol}
+dict = !{"<|" ~ "|>" | "<|" ~ key_value ~ (Comma ~ key_value)* ~ "|>"}
+list = !{"{" ~ "}" | "{" ~ expr ~ (Comma ~ expr)* ~ "}"}
+slice = !{"[" ~ "[" ~ index ~ (Comma ~ index)* ~ "]" ~ "]"}
+key_value =!{data ~ (RuleDelayed|Rule) ~ expr}
+index = {
+    Start? ~ ";;" ~ End? ~ ";;" ~ Step? |
+    Start? ~ ";;" ~ End? |
+    expr
+}
+Start = {expr}
+End = {expr}
+Step = {expr}
+/*====================================================================================================================*/
+///#D19A66
+Number    = ${(BaseForm|Decimal|Integer) ~ ExDigits?}
+Decimal   = ${Dot ~ Integer|Integer ~ Dot ~ Integer?}
+Integer   = @{ASCII_DIGIT+}
+BaseForm  = ${Integer ~ Base ~ (ASCII_ALPHA|ASCII_DIGIT)+}
+ExDigits  = ${(Accuracy|Precision) ~ (Decimal|Integer)}
+Accuracy  = @{"``"}
+Precision = @{"`"}
+Base      = @{"^^"}
+/*====================================================================================================================*/
+///#98C379
+String     = ${Quote ~ (!Quote ~ ANY)* ~ Quote}
+/*====================================================================================================================*/
+///#61AFEF
+Symbol  = ${SYMBOL ~ ("`" ~ SYMBOL)*}
+SYMBOL  = @{
+    XID_START ~  (XID_START|ASCII_DIGIT)* |
+    "$" ~ (XID_START|ASCII_DIGIT)*
+}
+Pattern = @{XID_START* ~ Underline+}
+/*====================================================================================================================*/
+///#D19A66
+Slot     = ${"##" ~ Positive?|"#" ~ (SYMBOL|Integer)?}
+Positive = @{ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*}
+/*====================================================================================================================*/
+// NEWLINE = @{"\r"~"\n"|"\r"|"\n"}
+WHITESPACE = _{NEWLINE|WHITE_SPACE}
+COMMENT = _{"(*" ~ (COMMENT | !"*)" ~ ANY)* ~ "*)"}
+/*====================================================================================================================*/
+//!#56B6C2: Prefix|Infix|Postfix
+Prefix = @{
+    Bang|Not|Plus|Minus|Star
+}
+Suffix = @{
+    Derivative
+  | DoubleBang
+  | Bang | Question
+}
+Infix = _{
+    Set
+  | Plus|Minus
+  | Multiply|CenterDot|Kronecker|TensorProduct|Divide|Quotient|Modulo
+  | Power
+  | Grater|GraterEqual|Equal
+  | Dot
+}
+
+///#56B6C2
+Set = @{"="}
+Derivative = @{"′"+} //U+2032
+Or = @{"|"}
+LazyOr = @{"||"}
+
+
+Star =@{"*"}
+Slash =@{"/"}
+Escape = @{"\\"}
+
+Proportion = @{"::"|"∷"}//U+2237
+Comma = @{","}
+Dot = @{"."}
+Separate = @{";;"}
+Semicolon = @{";"}
+Colon = @{":"}
+///#56B6C2
+Question=@{"?"}
+Underline = @{"_"}
+
+
+
+Load =@{"<<<"|"⋘"} //U+22D8
+Save =@{">>>"|"⋙"} //U+22D9
+LeftShift =@{"<<"|"≪"} //U+226A
+RightShift =@{">>"|"≫"} //U+226B
+LessEqual =@{"<="}
+GraterEqual =@{">="}
+Less =@{"<"}
+Grater =@{">"}
+Pipeline = @{"|>"}
+Rule = @{"->"}
+RuleDelayed = @{":>"}
+
+Equivalent =@{"==="}
+NotEquivalent =@{"=!="}
+Equal =@{"=="}
+NotEqual =@{"!="|"≠"} //U+2260
+
+
+
+
+
+
+
+Plus =@{"+"}
+Minus =@{"-"}
+
+
+
+Multiply =@{Star | "×"} //U+00D7
+CenterDot = @{"⋅"} //U+22C5
+Kronecker =@{"⊗"} //U+2297
+TensorProduct=@{"⊙"} //U+2299
+Divide = @{Slash}
+Quotient = @{"//"}
+Modulo = @{"%"}
+Remainder =@{"÷"} //U+00F7
+
+
+Power = @{"^"}
+Surd = @{"√"} //U+221A
+
+
+Increase =@{"++"}
+Decrease =@{"--"}
+
+
+To =@{"->"}
+
+
+Elvis =@{":?"}
+Map =@ {"/@"}
+
+
+
+Acute =@{"´"} // U+00B4
+Quote = _{"\""}
+
+
+LogicOr =@{"||"|"∧"} //U+2227
+LogicAnd =@{"&&"|"∨"} //U+2228
+LogicNot =@{"¬"} //U+00AC
+
+Ellipsis =@{"..."|"…"} // U+2026
+
+
+
+
+LogicXor =@{"⊕"} //U+2295
+MapAll =@{"//@"}
+
+Concat =@{"~~"}
+Destruct =@{"~="}
+
+
+DoubleBang =@{"!!"}
+Bang =@{"!"}
+Not  =@{"¬"}
+
+Sharp =@{"#"}
+
+Curry =@{"@@@"}
+Apply =@{"@@"}
+At    =@{"@"}

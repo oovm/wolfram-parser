@@ -1,15 +1,11 @@
 {
-    "name": "notedown-workspace",
     "private": true,
     "scripts": {
-        "pest": "cargo test --color=always --package wolfram-pest --test main gen --no-fail-fast -- --ignored && wee fmt -t",
-        "up": "cargo publish --allow-dirty",
         "build": "cargo build --release",
         "test": "cargo test --release",
         "fmt": "cargo fmt --all",
-        "push": "yarn test && git push",
+        "push": "wee test && git push",
         "reset": "git reset Head~ --soft",
         "pub": "cargo-publish-all --yes --allow-dirty",
-        "zola": "cargo build --release --color=always --package notedown_zola"
     }
 }
