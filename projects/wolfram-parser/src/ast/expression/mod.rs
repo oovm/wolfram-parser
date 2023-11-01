@@ -2,9 +2,10 @@ use super::*;
 use std::ops::Range;
 use wolfram_error::FileID;
 
-pub use self::take_part::WolframCallPart;
+pub use self::{take_part::WolframCallPart, take_terms::MultivariateExpression};
 
 mod take_part;
+mod take_terms;
 
 /// A valid wolfram expression
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
@@ -27,17 +28,6 @@ pub struct BinaryExpression {
     pub lhs: WolframExpression,
     /// The right hand side of this expression
     pub rhs: WolframExpression,
-    /// The input position of this expression
-    pub span: Range<usize>,
-}
-/// A wolfram [FullForm](https://reference.wolfram.com/language/ref/FullForm.html) expression
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct MultivariateExpression {
-    /// The operator of this expression
-    pub full_form: bool,
-    /// The operator of this expression
-    pub terms: WolframExpression,
     /// The input position of this expression
     pub span: Range<usize>,
 }
@@ -70,9 +60,9 @@ impl WolframExpression {
             Self::String(v) => v.span.clone(),
             Self::Unary(v) => v.span.clone(),
             Self::Binary(v) => v.span.clone(),
-            Self::List(v) => v.span.clone(),
+            Self::List(v) => v.get_range(),
             Self::Association(v) => v.span.clone(),
-            Self::FullForm(v) => v.span.clone(),
+            Self::Standard(v) => v.get_range(),
             Self::Symbol(v) => v.span.clone(),
             Self::Number(v) => v.span.clone(),
         }
@@ -89,7 +79,7 @@ impl WolframExpression {
             }
             Self::List(_) => {}
             Self::Association(_) => {}
-            Self::FullForm(_) => {}
+            Self::Standard(_) => {}
             Self::Symbol(v) => v.file = file,
             _ => {}
         }

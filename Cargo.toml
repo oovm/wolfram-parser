@@ -3,6 +3,7 @@ resolver = "2"
 members = ["projects/*"]
 default-members = [
     "projects/wolfram-parser",
+    "projects/wolfram-error",
 ]
 exclude = [
     "projects/.DS_Store",

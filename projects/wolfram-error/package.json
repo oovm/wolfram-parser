@@ -2,7 +2,7 @@
     "name": "notedown-workspace",
     "private": true,
     "scripts": {
-        "pest": "cargo test --color=always --package wolfram-pest --test main gen --no-fail-fast -- --ignored && wee fmt -t",
+        "p": "cargo publish --allow-dirty",
         "up": "cargo publish --allow-dirty",
         "build": "cargo build --release",
         "test": "cargo test --release",

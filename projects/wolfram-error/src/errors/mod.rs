@@ -18,7 +18,7 @@ impl WolframError {
     pub fn kind(&self) -> &WolframErrorKind {
         &*self.kind
     }
-
+    /// Build a diagnostic from error
     pub fn as_report(&self) -> Diagnostic {
         match self.kind() {
             WolframErrorKind::RuntimeError { message } => Diagnostic::new(ReportKind::Error).with_message(message).finish(),

@@ -3,13 +3,13 @@ name = "wolfram-error"
 version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "Notedown Text parser"
-repository = "https://github.com/GalAster/wolfram-pest"
+repository = "https://github.com/oovm/wolfram-parser"
 readme = "Readme.md"
 license = "MPL-2.0"
 edition = "2021"
 
 
 [dependencies]
-validatus = "0.0.3"
-diagnostic = "0.5.6"
+validatus = "0.0.*"
+diagnostic = "0.5.*"
 

@@ -1,5 +1,11 @@
 #![doc = include_str!("readme.md")]
-pub use self::{collections::*, expression::*, number::*, operators::*, symbols::*};
+pub use self::{
+    collections::{lists::WolframList, WolframDict, WolframString, WolframTerms},
+    expression::*,
+    number::*,
+    operators::*,
+    symbols::*,
+};
 use std::{
     fmt::{Debug, Display, Formatter},
     hash::{Hash, Hasher},
@@ -45,7 +51,7 @@ pub enum WolframExpression {
     /// Wolfram expression with multivariate operator
     ///
     /// In general this is equivalent to the prefix expression
-    FullForm(Box<MultivariateExpression>),
+    Standard(Box<MultivariateExpression>),
 }
 
 impl Debug for WolframExpression {
@@ -59,7 +65,7 @@ impl Debug for WolframExpression {
             Self::Binary(v) => Debug::fmt(v, f),
             Self::List(v) => Debug::fmt(v, f),
             Self::Association(v) => Debug::fmt(v, f),
-            Self::FullForm(v) => Debug::fmt(v, f),
+            Self::Standard(v) => Debug::fmt(v, f),
         }
     }
 }
