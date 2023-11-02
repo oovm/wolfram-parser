@@ -12,4 +12,12 @@ impl WolframList {
     pub fn get_range(&self) -> Range<usize> {
         self.wrap.span.clone()
     }
+    /// The head symbol of a list
+    pub fn head(&self) -> WolframExpression {
+        WolframExpression::Symbol(Box::new(WolframSymbol {
+            namepath: vec!["List".to_string()],
+            file: Default::default(),
+            span: Default::default(),
+        }))
+    }
 }

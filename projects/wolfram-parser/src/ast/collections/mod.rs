@@ -24,6 +24,19 @@ pub struct WolframTerms {
     pub span: Range<usize>,
 }
 
+/// Wolfram expression without head
+///
+/// Equivalent to `[...]`, which is not a legal wolfram expression
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+
+pub struct WolframView<'i> {
+    /// The list in the expression
+    pub items: &'i [WolframExpression],
+    /// The input position of this list
+    pub span: Range<usize>,
+}
+
 /// A wolfram [Association](https://reference.wolfram.com/language/ref/Association.html) expression
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

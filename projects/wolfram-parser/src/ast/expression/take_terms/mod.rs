@@ -1,31 +1,39 @@
 use super::*;
 
-/// `f[a][b][c]`
+/// Rank-N expression `f[a][b][c]`
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MultivariateExpression {
-    pub head: WolframSymbol,
+    /// Only symbol as lead is valid
+    pub symbol: WolframSymbol,
+    /// The terms of this expression
     pub terms: Vec<WolframTerms>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+/// a view of `f[a][b][c]`
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MultivariateView<'i> {
-    head: &'i WolframSymbol,
-    // maybe zero
+    symbol: &'i WolframSymbol,
     terms: &'i [WolframTerms],
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+/// The head part of expression
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub enum MultivariateHead<'i> {
+pub enum ExpressionHead<'i> {
     /// [System`Symbol](https://reference.wolfram.com/language/ref/Symbol.html), get the first part of expression
-    Symbol,
+    Symbol(&'static str),
     /// borrow of multivariate expression
     View(MultivariateView<'i>),
 }
 
 impl MultivariateExpression {
+    /// Get the reference of the expression
+    #[inline]
+    pub fn view(&self) -> MultivariateView {
+        MultivariateView { symbol: &self.symbol, terms: &self.terms }
+    }
     /// [First](https://reference.wolfram.com/language/ref/First.html), get the first part of expression
     /// | Input | Output |
     /// | :-    | :-    |
@@ -33,9 +41,10 @@ impl MultivariateExpression {
     /// |`First[f[1]]`| `1` |
     /// |`First[f[1,2]]`| `1` |
     /// |`First[f[1][2]]`| `2` |
+    #[inline]
     pub fn first(&self) -> Option<&WolframExpression> {
-        let item = unsafe { self.terms.get_unchecked(self.terms.len() - 1) };
-        item.items.first()
+        let last = self.terms.last()?;
+        last.items.first()
     }
     /// [Last](https://reference.wolfram.com/language/ref/First.html), get the last part of expression
     /// | Input | Output |
@@ -44,12 +53,10 @@ impl MultivariateExpression {
     /// |`Last[f[1]]`| `1` |
     /// |`Last[f[1,2]]`| `2` |
     /// |`Last[f[1][2]]`| `2` |
+    #[inline]
     pub fn last(&self) -> Option<&WolframExpression> {
-        let item = unsafe {
-            debug_assert_ne!(self.terms.len(), 0, "illegal expression");
-            self.terms.get_unchecked(self.terms.len() - 1)
-        };
-        item.items.last()
+        let last = self.terms.last()?;
+        last.items.last()
     }
     /// [Head](https://reference.wolfram.com/language/ref/Head.html), get the head part of expression
     /// | Input | Output |
@@ -58,14 +65,53 @@ impl MultivariateExpression {
     /// |`Head[f[1]]`| `f` |
     /// |`Head[f[1,2]]`| `f` |
     /// |`Head[f[1][2]]`| `f[1]` |
-    pub fn head(&self) -> MultivariateHead {
-        debug_assert_ne!(self.terms.len(), 0, "illegal expression");
-        MultivariateHead { head: &self.head, terms: &self.terms[0..self.terms.len() - 1] }
+    #[inline]
+    pub fn head(&self) -> ExpressionHead {
+        if self.terms.is_empty() {
+            ExpressionHead::Symbol("Symbol")
+        }
+        else {
+            ExpressionHead::View(MultivariateView { symbol: &self.symbol, terms: &self.terms[0..self.terms.len() - 1] })
+        }
+    }
+    /// Get the range of expression
+    #[inline]
+    pub fn get_range(&self) -> Range<usize> {
+        self.view().get_range()
+    }
+}
+
+impl<'i> MultivariateView<'i> {
+    /// [First](https://reference.wolfram.com/language/ref/First.html), get the first part of expression
+    pub fn first(&self) -> Option<&WolframExpression> {
+        let last = self.terms.last()?;
+        last.items.first()
+    }
+    /// [Last](https://reference.wolfram.com/language/ref/First.html), get the last part of expression
+    pub fn last(&self) -> Option<&WolframExpression> {
+        let last = self.terms.last()?;
+        last.items.last()
+    }
+    /// [Head](https://reference.wolfram.com/language/ref/Head.html), get the head part of expression
+    pub fn head(&self) -> ExpressionHead {
+        if self.terms.is_empty() {
+            ExpressionHead::Symbol("Symbol")
+        }
+        else {
+            ExpressionHead::View(Self { symbol: self.symbol, terms: &self.terms[0..self.terms.len() - 1] })
+        }
     }
     /// Get the range of expression
     pub fn get_range(&self) -> Range<usize> {
-        let start = self.head.span.start;
-        let end = self.terms.last().unwrap().span.end;
+        let start = self.symbol.span.start;
+        let end = self.terms.last().map(|s| s.span.end).unwrap_or(self.symbol.span.end);
         start..end
+    }
+}
+
+impl<'i> MultivariateView<'i> {
+    /// Get the own of the expression
+    pub fn to_owned(&self) -> MultivariateExpression {
+        MultivariateExpression { symbol: self.symbol.clone(), terms: self.terms.to_vec() }
     }
 }
